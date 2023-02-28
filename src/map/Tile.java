@@ -35,6 +35,16 @@ public class Tile
         this.type = type;
     }
 
+    public boolean posEquals(Tile t)
+    {
+        return this.getX() == t.getX() && this.getY() == t.getY();
+    }
+
+    public double getDistance(Tile t)
+    {
+        return Math.sqrt((this.getX() - t.getX()) * (this.getX() - t.getX()) + (this.getY() - t.getY()) * (this.getY() - t.getY()));
+    }
+
     @Override
     public boolean equals(Object o)
     {

@@ -1,13 +1,13 @@
 package game;
 
-import map.Map;
+import map.Level;
 
 public class Game {
-    private Map map;
+    private Level level;
     private int difficulty;
 
-    public Game(Map map, int difficulty) {
-        this.map = map;
+    public Game(Level level, int difficulty) {
+        this.level = level;
         this.difficulty = difficulty;
     }
     public void start(){

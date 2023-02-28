@@ -4,17 +4,20 @@ import java.util.*;
 
 public class AStar
 {
-    private final Map map;
+    private final Level level;
 
-    public AStar(Map m)
+    public AStar(Level m)
     {
-        this.map = m;
+        this.level = m;
     }
 
     public List<Tile> getPath(Tile x, Tile y)
     {
         if (x.getType() == TileType.WALL || y.getType() == TileType.WALL)
             return null;
+
+        if (x.posEquals(y))
+            return Arrays.asList(y);
 
         PriorityQueue<ANode> openList = new PriorityQueue<>(new ANodeComparator());
         openList.add(new ANode(x, null, 0, AStar.getH(x, y)));
@@ -26,16 +29,16 @@ public class AStar
             List<Tile> successors = new ArrayList<>();
 
             if (node.getTile().getX() != 0)
-                successors.add(this.map.getTile(node.getTile().getX() - 1, node.getTile().getY()));
+                successors.add(this.level.getTile(node.getTile().getX() - 1, node.getTile().getY()));
 
             if (node.getTile().getY() != 0)
-                successors.add(this.map.getTile(node.getTile().getX(), node.getTile().getY() - 1));
+                successors.add(this.level.getTile(node.getTile().getX(), node.getTile().getY() - 1));
 
-            if (node.getTile().getX() != this.map.getWidth() - 1)
-                successors.add(this.map.getTile(node.getTile().getX() + 1, node.getTile().getY()));
+            if (node.getTile().getX() != this.level.getWidth() - 1)
+                successors.add(this.level.getTile(node.getTile().getX() + 1, node.getTile().getY()));
 
-            if (node.getTile().getY() != this.map.getHeight() - 1)
-                successors.add(this.map.getTile(node.getTile().getX(), node.getTile().getY() + 1));
+            if (node.getTile().getY() != this.level.getHeight() - 1)
+                successors.add(this.level.getTile(node.getTile().getX(), node.getTile().getY() + 1));
 
             for (Tile tile : successors)
             {
