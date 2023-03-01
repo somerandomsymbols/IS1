@@ -2,16 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42ac34e6-9b67-4dd5-8c05-c091011736a5" name="Changes" comment="3">
-      <change afterPath="$PROJECT_DIR$/src/map/Level.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ghost.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/creatures/Ghost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/creatures/Ghost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/creatures/PacMan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/creatures/Pacman.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/game/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/creatures/Pacman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/creatures/Pacman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game/Game.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/map/AStar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/map/AStar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/map/Map.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/map/Tile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/map/Tile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/map/AStar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pathfinding/AStar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/map/Level.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/map/Level.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/eyes_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/eyes_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/eyes_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/eyes_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_0_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_0_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_1_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_1_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_2_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_2_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_3_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/ghost_3_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/pacman_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/pacman_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/textures/pacman_2.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,8 +36,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -89,7 +101,8 @@
       <workItem from="1676976196167" duration="3071000" />
       <workItem from="1677594856666" duration="14871000" />
       <workItem from="1677613531699" duration="221000" />
-      <workItem from="1677613766302" duration="325000" />
+      <workItem from="1677613766302" duration="638000" />
+      <workItem from="1677682180309" duration="16576000" />
     </task>
     <task id="LOCAL-00001" summary="1">
       <created>1676386465304</created>
@@ -105,7 +118,21 @@
       <option name="project" value="LOCAL" />
       <updated>1676751315412</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="3">
+      <created>1677614130751</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1677614130751</updated>
+    </task>
+    <task id="LOCAL-00004" summary="3">
+      <created>1677614173437</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1677614173437</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -125,6 +152,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1" />
     <MESSAGE value="2" />
-    <option name="LAST_COMMIT_MESSAGE" value="2" />
+    <MESSAGE value="3" />
+    <option name="LAST_COMMIT_MESSAGE" value="3" />
   </component>
 </project>

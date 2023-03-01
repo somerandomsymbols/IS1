@@ -2,6 +2,7 @@ package map;
 
 import creatures.Ghost;
 import creatures.Pacman;
+import pathfinding.AStar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +15,41 @@ public class Level {
     private List<Ghost> ghosts;
     private Pacman pacman;
 
+    private int [][][][] distances;
+
     public Level(int w, int h)
     {
         this.ghosts = new ArrayList<>();
         this.width = w;
         this.height = h;
         this.level = new Tile[w][h];
+        this.distances = null;
+        Random random = new Random();
 
         for (int x = 0; x < this.width; ++x)
             for (int y = 0; y < this.height; ++y)
-                this.level[x][y] = new Tile(x, y, TileType.FOOD);
+                this.level[x][y] = new Tile(x, y, random.nextBoolean() ? TileType.FOOD : TileType.EMPTY);
+    }
+
+    public int getDistance(Tile t1, Tile t2)
+    {
+        if (this.distances == null)
+        {
+            AStar aStar = new AStar(this);
+            this.distances = new int[this.width][this.height][this.width][this.height];
+
+            for (int x = 0; x < this.width; ++x)
+                for (int y = 0; y < this.height; ++y)
+                    for (int x1 = 0; x1 < this.width; ++x1)
+                        for (int y1 = 0; y1 < this.height; ++y1)
+                        {
+                            List<Tile> p = aStar.getPath(this.level[x][y], this.level[x1][y1]);
+
+                            this.distances[x1][y1][x][y] = p != null ? p.size() - 1 : this.width * this.height;
+                        }
+        }
+
+        return this.distances[t1.getX()][t1.getY()][t2.getX()][t2.getY()];
     }
 
     public int getWidth()
@@ -39,6 +65,25 @@ public class Level {
     public Tile getTile(int x, int y)
     {
         return this.level[x][y];
+    }
+
+    public List<Tile> getNeighbors(Tile t)
+    {
+        List<Tile> neighbors = new ArrayList<>();
+
+        if (t.getX() != 0 && this.getTile(t.getX() - 1, t.getY()).getType() != TileType.WALL)
+            neighbors.add(this.getTile(t.getX() - 1, t.getY()));
+
+        if (t.getY() != 0 && this.getTile(t.getX(), t.getY() - 1).getType() != TileType.WALL)
+            neighbors.add(this.getTile(t.getX(), t.getY() - 1));
+
+        if (t.getX() != this.getWidth() - 1 && this.getTile(t.getX() + 1, t.getY()).getType() != TileType.WALL)
+            neighbors.add(this.getTile(t.getX() + 1, t.getY()));
+
+        if (t.getY() != this.getHeight() - 1 && this.getTile(t.getX(), t.getY() + 1).getType() != TileType.WALL)
+            neighbors.add(this.getTile(t.getX(), t.getY() + 1));
+
+        return neighbors;
     }
 
     public List<Ghost> getGhosts()
@@ -59,6 +104,17 @@ public class Level {
     public void setPacman(Pacman p)
     {
         this.pacman = p;
+    }
+
+    public Level getCopy()
+    {
+        Level l = new Level(this.width, this.height);
+
+        for (int x = 0; x < this.width; ++x)
+            for (int y = 0; y < this.height; ++y)
+                l.getTile(x, y).setType(this.getTile(x, y).getType());
+
+        return l;
     }
 
     public static Level generate(int seed)
@@ -139,7 +195,7 @@ public class Level {
 
     public static Level getRandom()
     {
-        Random random = new Random(1488);
+        Random random = new Random();
         int w = 15, h = 15;
         Level l = new Level(w, h);
 

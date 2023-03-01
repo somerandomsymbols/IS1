@@ -5,6 +5,8 @@ import creatures.GhostColor;
 import creatures.Pacman;
 import map.Level;
 import map.TileType;
+import pathfinding.AStar;
+import pathfinding.GreedyAlgorithm;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,13 +18,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Random;
 
 class jPanel2 extends JPanel implements KeyListener
 {
     private static final BufferedImage imageTile;
     private static final BufferedImage imageFood;
 
-    private static final BufferedImage[] imagePacman;
+    private static final BufferedImage[][] imagePacman;
     private static final Map<GhostColor, BufferedImage[]> imageGhost;
     private static final BufferedImage[] imageEyes;
     private static final BufferedImage[] imageWall;
@@ -45,7 +48,7 @@ class jPanel2 extends JPanel implements KeyListener
     private static final BufferedImage imageEyesLeft;
     private static final BufferedImage imageEyesRight;*/
 
-    private static int length = 35;
+    public static final int length = 32;
 
     @Override
     public void paintComponent(Graphics g)
@@ -96,7 +99,7 @@ class jPanel2 extends JPanel implements KeyListener
         }
 
         if (level.getPacman() != null)
-            g.drawImage(imagePacman[(int) (System.currentTimeMillis() % 500 / 125)], level.getPacman().getPos().getX() * length, level.getPacman().getPos().getY() * length, length, length, null);
+            g.drawImage(imagePacman[level.getPacman().getDirection()][(int) (System.currentTimeMillis() % 500 / 125)], level.getPacman().getPos().getX() * length, level.getPacman().getPos().getY() * length, length, length, null);
 
         for (Ghost ghost : level.getGhosts())
         {
@@ -146,43 +149,61 @@ class jPanel2 extends JPanel implements KeyListener
             imageTile = ImageIO.read(new File("textures/tile.png"));
             imageFood = ImageIO.read(new File("textures/food.png"));
 
-            imagePacman = new BufferedImage[4];
+            imagePacman = new BufferedImage[4][4];
 
             for (int i = 0; i < 3; ++i)
-                imagePacman[i] = ImageIO.read(new File("textures/pacman_" + i + ".png"));
+                imagePacman[0][i] = ImageIO.read(new File("textures/creatures/pacman/pacman_" + i + ".png"));
 
-            imagePacman[3] = imagePacman[1];
+            imagePacman[0][3] = imagePacman[0][1];
+
+            for (int i = 0; i < 4; ++i)
+            {
+                BufferedImage image = imagePacman[0][i];
+
+                for (int j = 1; j < 4; ++j)
+                {
+                    BufferedImage rotatedImage = new BufferedImage(image.getHeight(), image.getWidth(), image.getType());
+
+                    for (int x = 0; x < image.getWidth(); x++)
+                        for (int y = 0; y < image.getHeight(); y++)
+                            rotatedImage.setRGB(image.getHeight() - y - 1, x, image.getRGB(x, y));
+
+                    image = rotatedImage;
+
+                    imagePacman[j][i] = image;
+                }
+            }
 
             imageGhost = new EnumMap<>(GhostColor.class);
 
             imageGhost.put(GhostColor.RED, new BufferedImage[]
                     {
-                            ImageIO.read(new File("textures/ghost_0_0.png")),
-                            ImageIO.read(new File("textures/ghost_0_1.png"))
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_0_0.png")),
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_0_1.png"))
                     });
 
             imageGhost.put(GhostColor.YELLOW, new BufferedImage[]
                     {
-                            ImageIO.read(new File("textures/ghost_1_0.png")),
-                            ImageIO.read(new File("textures/ghost_1_1.png"))
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_1_0.png")),
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_1_1.png"))
                     });
 
             imageGhost.put(GhostColor.GREEN, new BufferedImage[]
                     {
-                            ImageIO.read(new File("textures/ghost_2_0.png")),
-                            ImageIO.read(new File("textures/ghost_2_1.png"))
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_2_0.png")),
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_2_1.png"))
                     });
 
             imageGhost.put(GhostColor.BLUE, new BufferedImage[]
                     {
-                            ImageIO.read(new File("textures/ghost_3_0.png")),
-                            ImageIO.read(new File("textures/ghost_3_1.png"))
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_3_0.png")),
+                            ImageIO.read(new File("textures/creatures/ghost/ghost_3_1.png"))
                     });
 
             imageEyes = new BufferedImage[4];
 
             for (int i = 0; i < 4; ++i)
-                imageEyes[i] = ImageIO.read(new File("textures/eyes_" + i + ".png"));
+                imageEyes[i] = ImageIO.read(new File("textures/creatures/ghost/eyes/eyes_" + i + ".png"));
 
             imageWall = new BufferedImage[16];
 
@@ -226,23 +247,19 @@ class jPanel2 extends JPanel implements KeyListener
         {
             case KeyEvent.VK_D:
             case KeyEvent.VK_RIGHT:
-                Main.dx = 1;
-                Main.dy = 0;
+                level.getPacman().setDirection(2);
                 break;
             case KeyEvent.VK_S:
             case KeyEvent.VK_DOWN:
-                Main.dx = 0;
-                Main.dy = 1;
+                level.getPacman().setDirection(3);
                 break;
             case KeyEvent.VK_A:
             case KeyEvent.VK_LEFT:
-                Main.dx = -1;
-                Main.dy = 0;
+                level.getPacman().setDirection(0);
                 break;
             case KeyEvent.VK_W:
             case KeyEvent.VK_UP:
-                Main.dx = 0;
-                Main.dy = -1;
+                level.getPacman().setDirection(1);
                 break;
             case KeyEvent.VK_R:
                 if (level.getPacman() == null)
@@ -261,7 +278,6 @@ class jPanel2 extends JPanel implements KeyListener
 public class Main
 {
     public static Level level;
-    public static int dx = 0, dy = 0;
     public static final int gameplayTicksPerSecond = 4;
     public static final int framesPerSecond = 30;
     public static void printMap(Level level)
@@ -288,7 +304,35 @@ public class Main
             System.out.println();
         }
     }
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)
+    {
+        Random random = new Random();
+        level = Level.generate(random.nextInt());
+        new Ghost(level, level.getTile(10, 10), GhostColor.RED, AStar.class);
+        new Ghost(level, level.getTile(10, 12), GhostColor.YELLOW, AStar.class);
+        new Ghost(level, level.getTile(12, 10), GhostColor.GREEN, GreedyAlgorithm.class);
+        new Ghost(level, level.getTile(12, 12), GhostColor.BLUE, GreedyAlgorithm.class);
+        new Pacman(level, level.getTile(0, 0));
+
+        System.out.println(level.getDistance(level.getTile(0,0), level.getTile(1,0)));
+
+        //printMap(level);
+
+        /*AStar aStar = new AStar(map);
+        List<Tile> list = aStar.getPath(map.getTile(0,0), map.getTile(map.getWidth() - 1, map.getHeight() - 1));
+
+        if (list != null)
+        {
+            System.out.println("not null");
+            for (Tile tile : list)
+                map.getTile(tile.getX(), tile.getY()).setType(TileType.FOOD);
+            //System.out.println(tile.getX() + " " + tile.getY());
+        }
+        else
+            System.out.println("null");*/
+
+        //printMap(map);
+
         JFrame frame = new JFrame("FrameDemo");
 
         //2. Optional: What happens when the frame closes?
@@ -311,7 +355,7 @@ public class Main
 
         // setbackground of panel
         panel.setBackground(Color.lightGray);
-        panel.setPreferredSize(new Dimension(800,500));
+        panel.setPreferredSize(new Dimension(jPanel2.length * level.getWidth(),jPanel2.length * level.getHeight()));
 
         // Adding panel to frame
         frame.add(panel);
@@ -323,30 +367,6 @@ public class Main
 
         //5. Show it.
         frame.setVisible(true);
-
-        level = Level.generate(1488);
-        new Ghost(level, level.getTile(10, 10), GhostColor.RED);
-        new Ghost(level, level.getTile(10, 12), GhostColor.YELLOW);
-        new Ghost(level, level.getTile(12, 10), GhostColor.GREEN);
-        new Ghost(level, level.getTile(12, 12), GhostColor.BLUE);
-        new Pacman(level, level.getTile(level.getWidth() - 1, level.getHeight() - 1));
-
-        //printMap(level);
-
-        /*AStar aStar = new AStar(map);
-        List<Tile> list = aStar.getPath(map.getTile(0,0), map.getTile(map.getWidth() - 1, map.getHeight() - 1));
-
-        if (list != null)
-        {
-            System.out.println("not null");
-            for (Tile tile : list)
-                map.getTile(tile.getX(), tile.getY()).setType(TileType.FOOD);
-            //System.out.println(tile.getX() + " " + tile.getY());
-        }
-        else
-            System.out.println("null");*/
-
-        //printMap(map);
 
         Thread graphicsThread = new Thread(() -> {
             long time = System.currentTimeMillis();
@@ -376,7 +396,7 @@ public class Main
                     ghost.tick();
 
                 if (level.getPacman() != null)
-                    level.getPacman().move(dx, dy);
+                    level.getPacman().tick();
             }
         });
         gameplayThread.start();

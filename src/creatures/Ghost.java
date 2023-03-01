@@ -1,36 +1,52 @@
 package creatures;
 
 import main.Main;
-import map.AStar;
 import map.Level;
 import map.Tile;
+import pathfinding.AStar;
+import pathfinding.PathfindingAlgorithm;
 
 import java.util.List;
 import java.util.Random;
 
 public class Ghost
 {
-    private Level level;
-    private AStar algorithm;
+    private final Level level;
+    private PathfindingAlgorithm algorithm;
     private Tile pos;
     private List<Tile> path;
-    private Tile restPos;
+    private final Tile restPos;
     private GhostBehaviour behaviour;
-    private int timeout = 0;
-    private int direction = 0;
-    private GhostColor color;
+    private int timeout;
+    private int direction;
+    private final GhostColor color;
 
-    public Ghost(Level m, Tile p, GhostColor c)
+    public Ghost(Level m, Tile p, GhostColor c, Class<? extends PathfindingAlgorithm> a)
     {
         this.level = m;
-        this.algorithm = new AStar(this.level);
+
+        try
+        {
+            this.algorithm = a.getConstructor(Level.class).newInstance(this.level);
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            this.algorithm = new AStar(this.level);
+        }
+
         this.pos = p;
         this.path = null;
         this.restPos = p;//this.map.getTile(this.map.getWidth() / 2, this.map.getHeight() / 2);
         this.behaviour = GhostBehaviour.RANDOM;
         this.color = c;
+        this.direction = 0;
         this.timeout = 0;
         this.level.addGhost(this);
+    }
+
+    public Ghost(Level m, Tile p, GhostColor c)
+    {
+        this(m, p, c, AStar.class);
     }
 
     public Tile getPos()
@@ -113,31 +129,39 @@ public class Ghost
             }
         }
 
-        if (this.path.size() == 1)
-            this.path = null;
-        else
+        try
         {
-            this.path.remove(0);
-
-            Tile target = this.path.get(0);
-
-            if (this.pos.getX() > target.getX())
-                this.direction = 0;
-            else if (this.pos.getX() < target.getX())
-                this.direction = 2;
-            else if (this.pos.getY() > target.getY())
-                this.direction = 1;
-            else if (this.pos.getY() < target.getY())
-                this.direction = 3;
-
-            this.pos = target;
-
-            if (this.behaviour == GhostBehaviour.ATTACK)
+            if (this.path.size() == 1)
                 this.path = null;
+            else
+            {
+                this.path.remove(0);
 
-            if (this.level.getPacman() != null && this.level.getPacman().getPos().posEquals(this.pos))
-                this.level.setPacman(null);
+                Tile target = this.path.get(0);
+
+                if (this.pos.getX() > target.getX())
+                    this.direction = 0;
+                else if (this.pos.getX() < target.getX())
+                    this.direction = 2;
+                else if (this.pos.getY() > target.getY())
+                    this.direction = 1;
+                else if (this.pos.getY() < target.getY())
+                    this.direction = 3;
+
+                this.pos = level.getTile(target.getX(), target.getY());
+
+                if (this.behaviour == GhostBehaviour.ATTACK)
+                    this.path = null;
+
+                if (this.level.getPacman() != null && this.level.getPacman().getPos().posEquals(this.pos))
+                    this.level.setPacman(null);
+            }
+        } catch (NullPointerException e)
+        {
+            System.out.println(this.behaviour + " " + this.pos.getX() + " " + this.pos.getY() + " " + this.color);
         }
+
+
 
         /*if (path != null)
             for (Tile tile : this.path)
